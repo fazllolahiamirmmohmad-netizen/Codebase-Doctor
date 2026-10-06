@@ -1,9 +1,6 @@
-README.md
 # Codebase Doctor
 
 An intelligent Python codebase analysis and repair system designed to inspect, understand, and safely improve software projects.
-
-Codebase Doctor combines static code analysis, AST parsing, dependency analysis, architecture inspection, security analysis, AI-assisted reasoning, repair planning, validation, and rollback into a modular software-engineering system.
 
 > **Status:** Early Development
 
@@ -11,48 +8,40 @@ Codebase Doctor combines static code analysis, AST parsing, dependency analysis,
 
 ## Overview
 
-Codebase Doctor is designed to act as an intelligent software-engineering assistant for Python codebases.
+Codebase Doctor is a modular software-engineering tool for analyzing Python codebases.
 
-The system analyzes an existing project instead of only executing it. It attempts to understand the structure and relationships inside the codebase, identify problems, explain their impact, and eventually propose and safely apply repairs.
+The project is designed to inspect an existing codebase, understand its structure, detect software-engineering problems, explain detected issues, and eventually provide controlled and reversible repairs.
 
-The core workflow is:
-
-```text
-Project
-   ↓
-Scanner
-   ↓
-AST Parser
-   ↓
-Code Analysis
-   ├── Dependency Analysis
-   ├── Architecture Analysis
-   └── Security Analysis
-   ↓
-Issue Detection
-   ↓
-AI Reasoning
-   ↓
-Issue Report
-   ↓
-Repair Planning
-   ↓
-User Approval
-   ↓
-Code Modification
-   ↓
-Validation
-   ├── Success → Save
-   └── Failure → Rollback
+The long-term vision is to combine traditional static analysis with AI-assisted reasoning and safe automated code modification.
 
 A fundamental design principle is:
 
-Codebase Doctor must never silently modify a user's codebase.
+> **Codebase Doctor must never silently modify a user's codebase.**
 
-Features
+---
+
+## Current Capabilities
+
+The current implementation focuses on the initial analysis pipeline:
+
+```text
+Project
+   |
+   v
+Scanner
+   |
+   v
+AST Parser
+   |
+   v
+Code Analyzer
+   |
+   v
+Issue Detection
+
 Project Scanner
 
-The scanner analyzes the project filesystem and collects information about:
+The scanner analyzes the project filesystem and identifies:
 
 Files
 Directories
@@ -74,18 +63,16 @@ Build Abstract Syntax Trees
 Detect syntax errors
 Track successfully parsed files
 Track failed files
-Code Analysis
+Code Analyzer
 
-The analyzer inspects parsed Python code for code-quality problems.
-
-Current checks include:
+The analyzer currently checks for several code-quality problems, including:
 
 Excessive function parameters
-Large functions
+Large function bodies
 Bare except blocks
-Syntax errors
+Python syntax errors
 
-Each detected problem is represented as a structured issue containing information such as:
+Detected problems are represented as structured issues containing information such as:
 
 Issue ID
 File path
@@ -97,135 +84,115 @@ Severity
 Suggested solution
 Evidence
 Metadata
-Dependency Analysis
 
-The dependency subsystem is designed to analyze:
+Example
 
-Python imports
-Module relationships
-External dependencies
-Internal project dependencies
-Architecture Analysis
+The repository contains a deliberately problematic sample project:
 
-The architecture subsystem is designed to analyze relationships between modules and identify structural problems in a codebase.
+examples/sample_project/
+├── broken.py
+├── main.py
+└── users.py
+broken.py
 
-Security Analysis
+Contains an intentional Python syntax error.
 
-The security subsystem is designed to detect potentially dangerous or insecure coding patterns.
+users.py
 
-AI Reasoning
+Contains a function with an excessive number of parameters.
 
-The reasoning layer is designed to provide AI-assisted interpretation of detected issues.
+These examples allow the current scanner, parser, and analyzer pipeline to be demonstrated.
 
-The architecture supports integration with local AI models through Ollama.
+Example detected issues:
 
-Repair System
+Python syntax error
+Severity: HIGH
+Too many function parameters
+Severity: MEDIUM
 
-The repair pipeline is designed around controlled modifications:
-
-Issue
-  ↓
-Repair Plan
-  ↓
-Diff Preview
-  ↓
-User Approval
-  ↓
-Modification
-  ↓
-Validation
-  ↓
-Save / Rollback
-Validation
-
-The validator is responsible for checking whether a modification remains valid after repair.
-
-Possible validation mechanisms include:
-
-Python compilation
-Automated tests
-Static analysis
-Type checking
-Rollback
-
-If a modification fails validation, the rollback system is designed to restore the previous state of the affected files.
 
 Architecture
 
 Codebase Doctor follows a modular architecture based on separation of responsibilities.
 
-                         Codebase
-                            │
-                            ▼
-                       ┌─────────┐
-                       │ Scanner │
-                       └────┬────┘
-                            │
-                            ▼
-                       ┌─────────┐
-                       │ Parser  │
-                       │   AST   │
-                       └────┬────┘
-                            │
-             ┌──────────────┼──────────────┐
-             ▼              ▼              ▼
-        ┌─────────┐   ┌────────────┐   ┌──────────┐
-        │ Analyzer│   │ Dependency │   │ Security │
-        └────┬────┘   └─────┬──────┘   └────┬─────┘
-             │              │               │
-             └──────────────┼───────────────┘
-                            ▼
-                     ┌────────────┐
-                     │   Issues   │
-                     └─────┬──────┘
-                           │
-                           ▼
-                     ┌────────────┐
-                     │  Reasoning │
-                     └─────┬──────┘
-                           │
-                           ▼
-                     ┌────────────┐
-                     │  Reporter  │
-                     └─────┬──────┘
-                           │
-                           ▼
-                     ┌────────────┐
-                     │   Repair   │
-                     └─────┬──────┘
-                           │
-                           ▼
-                     ┌────────────┐
-                     │  Approval  │
-                     └─────┬──────┘
-                           │
-                           ▼
-                     ┌────────────┐
-                     │  Modifier  │
-                     └─────┬──────┘
-                           │
-                           ▼
-                     ┌────────────┐
-                     │ Validator  │
-                     └─────┬──────┘
-                           │
-                    ┌──────┴──────┐
-                    ▼             ▼
-                 Success        Failure
-                    │             │
-                    ▼             ▼
-                  Save         Rollback
+                    Codebase
+                       |
+                       v
+                  +---------+
+                  | Scanner |
+                  +----+----+
+                       |
+                       v
+                  +---------+
+                  | Parser  |
+                  |   AST   |
+                  +----+----+
+                       |
+          +------------+------------+
+          |            |            |
+          v            v            v
+     +---------+  +----------+  +----------+
+     | Analyzer|  |Dependency|  | Security |
+     +----+----+  +----------+  +----------+
+          |            |            |
+          +------------+------------+
+                       |
+                       v
+                 +-----------+
+                 |   Issues  |
+                 +-----+-----+
+                       |
+                       v
+                 +-----------+
+                 | Reasoning |
+                 +-----+-----+
+                       |
+                       v
+                 +-----------+
+                 |  Reporter |
+                 +-----+-----+
+                       |
+                       v
+                 +-----------+
+                 |  Repair   |
+                 +-----+-----+
+                       |
+                       v
+                 +-----------+
+                 | Approval  |
+                 +-----+-----+
+                       |
+                       v
+                 +-----------+
+                 | Modifier  |
+                 +-----+-----+
+                       |
+                       v
+                 +-----------+
+                 | Validator|
+                 +-----+-----+
+                       |
+                  +----+----+
+                  |         |
+                  v         v
+               Success   Failure
+                  |         |
+                  v         v
+                 Save    Rollback
+
+The architecture is intentionally divided into independent components so that each subsystem has a clear responsibility.
+
 Project Structure
 Codebase-Doctor/
-│
+|
 ├── examples/
 │   └── sample_project/
 │       ├── broken.py
 │       ├── main.py
 │       └── users.py
-│
+|
 ├── logs/
-│
+|
 ├── src/
 │   └── codebase_doctor/
 │       ├── __init__.py
@@ -243,16 +210,17 @@ Codebase-Doctor/
 │       ├── scanner.py
 │       ├── security.py
 │       └── validator.py
-│
+|
 ├── tests/
 │   ├── test_analyzer.py
 │   ├── test_parser.py
 │   └── test_scanner.py
-│
+|
 ├── .gitignore
 ├── pyproject.toml
 ├── README.md
 └── requirements.txt
+
 Core Modules
 Module	Responsibility
 scanner.py	Filesystem and project scanning
@@ -267,9 +235,177 @@ reasoning.py	AI-assisted reasoning
 repair.py	Repair planning
 modifier.py	Source-code modification
 validator.py	Post-repair validation
-rollback.py	Safe state restoration
-reporter.py	Issue and analysis reporting
-Installation
+rollback.py	State restoration
+reporter.py	Reporting and issue presentation
+
+Planned Architecture
+
+The long-term analysis and repair pipeline is planned as:
+
+Project
+   |
+   v
+Scanner
+   |
+   v
+AST Parser
+   |
+   v
+Static Analysis
+   |
+   +--> Dependency Analysis
+   |
+   +--> Architecture Analysis
+   |
+   +--> Security Analysis
+   |
+   v
+Issue Detection
+   |
+   v
+AI Reasoning
+   |
+   v
+Issue Report
+   |
+   v
+Repair Planning
+   |
+   v
+Diff Preview
+   |
+   v
+User Approval
+   |
+   v
+Code Modification
+   |
+   v
+Validation
+   |
+   +--> Success --> Save
+   |
+   +--> Failure --> Rollback
+
+The modules for these future stages already exist in the project structure so the system can evolve toward a larger integrated architecture.
+
+Safety Model
+
+Automated source-code modification can introduce significant risk.
+
+Codebase Doctor is therefore designed around an explicit approval and validation workflow.
+
+Before modifying source code:
+
+Issue
+   |
+   v
+Analysis
+   |
+   v
+Repair Plan
+   |
+   v
+Diff Preview
+   |
+   v
+User Approval
+
+After approval:
+
+Modification
+      |
+      v
+Validation
+   /     \
+  /       \
+Success   Failure
+  |         |
+  v         v
+Save     Rollback
+
+The goal is to make automated repairs:
+
+Explicit
+Reviewable
+Validated
+Reversible
+Auditable
+
+Development Status
+Implemented
+ Project architecture
+ Filesystem scanner
+ Python AST parser
+ Basic code-quality analyzer
+ Structured issue models
+ Issue management
+ Example project
+ Initial unit tests
+ Git repository
+ GitHub repository
+Under Development
+ Advanced dependency analysis
+ Advanced architecture analysis
+ Advanced security analysis
+ Advanced reporting
+ AI-powered reasoning
+ Repair planning
+ Diff generation and preview
+ Safe automated modification
+ Post-repair validation
+ Automatic rollback integration
+ End-to-end analysis pipeline
+ Dependency graph visualization
+ Graphical interface
+ Test generation
+ AI-assisted debugging
+ Automated refactoring
+
+ Roadmap
+
+The long-term goal is to evolve Codebase Doctor from a basic static-analysis system into an intelligent software-engineering platform.
+
+Static Analysis
+      |
+      v
+Code Understanding
+      |
+      v
+Architecture Analysis
+      |
+      v
+Dependency Graph
+      |
+      v
+Security Analysis
+      |
+      v
+AI Reasoning
+      |
+      v
+Repair Planning
+      |
+      v
+Diff Generation
+      |
+      v
+User Approval
+      |
+      v
+Code Modification
+      |
+      v
+Testing
+      |
+      v
+Validation
+      |
+      +----> Rollback
+      |
+      +----> Save
+
+      Installation
 Requirements
 Python 3.10+
 Git
@@ -279,77 +415,41 @@ Enter the project
 cd Codebase-Doctor
 Install dependencies
 python -m pip install -r requirements.txt
-Example
 
-The repository includes a sample Python project:
+Running the Tests
 
-examples/sample_project/
+The project uses pytest for testing.
 
-It contains:
+Run:
 
-main.py
-users.py
-broken.py
-
-broken.py intentionally contains a syntax error.
-
-users.py intentionally contains a function with excessive parameters.
-
-These files are included to demonstrate the analysis capabilities of Codebase Doctor.
-
-Example analysis results:
-
-Python syntax error
-Severity: HIGH
-
-and:
-
-Too many function parameters
-Severity: MEDIUM
-Current Pipeline
-
-The currently implemented analysis path is:
-
-Project
-   ↓
-Scanner
-   ↓
-Parser
-   ↓
-Analyzer
-   ↓
-Issue Detection
-
-The scanner identifies the project files.
-
-The parser converts valid Python source code into AST structures and detects syntax errors.
-
-The analyzer inspects the parsed AST and creates structured issues.
+pytest
 
 Technologies
-Core
+Current Core
 Python
 pathlib
 ast
 dataclasses
 typing
 logging
-Analysis
-Pytest
+Testing
+pytest
+Planned Analysis and Engineering Tools
 Ruff
 MyPy
 Radon
 NetworkX
 Packaging
 GitPython
-AI
+Planned AI Integration
 Pydantic
 Ollama
-GUI
+Planned GUI
 PySide6
+
 Engineering Principles
 
-Codebase Doctor is designed around the following principles:
+Codebase Doctor is being developed around the following principles:
 
 Modular architecture
 Separation of responsibilities
@@ -362,99 +462,8 @@ Safe source-code modification
 Validation before saving changes
 Rollback after failed validation
 Extensible AI integration
+Testable components
 Git-aware development
-Development Status
-Implemented
- Project architecture
- Filesystem scanner
- Python AST parser
- Basic code-quality analyzer
- Issue management
- Shared data models
- Example project
- Initial unit tests
- Git repository
- GitHub repository
-Planned / Under Development
- Advanced dependency analysis
- Advanced architecture analysis
- Advanced security analysis
- Advanced reporting
- AI-powered reasoning
- Repair planning
- Diff preview
- Safe automated modification
- Post-repair validation
- Automatic rollback
- End-to-end analysis pipeline
- Graph visualization
- Graphical interface
- Test generation
- AI-assisted debugging
- Automated refactoring
-Roadmap
-
-The long-term goal is to develop Codebase Doctor into an intelligent software-engineering platform capable of understanding and safely improving real-world Python codebases.
-
-Future development is planned around:
-
-Static Analysis
-      ↓
-Code Understanding
-      ↓
-Architecture Analysis
-      ↓
-Dependency Graph
-      ↓
-Security Analysis
-      ↓
-AI Reasoning
-      ↓
-Repair Planning
-      ↓
-Diff Generation
-      ↓
-User Approval
-      ↓
-Code Modification
-      ↓
-Testing
-      ↓
-Validation
-      ↓
-Rollback / Save
-Safety Model
-
-Automated source-code modification introduces significant risk.
-
-Codebase Doctor therefore follows a controlled repair workflow.
-
-The system should never directly modify a project without user approval.
-
-Before modification:
-
-Issue
-  ↓
-Analysis
-  ↓
-Repair Plan
-  ↓
-Diff Preview
-  ↓
-User Approval
-
-After approval:
-
-Modification
-      ↓
-Validation
-   ┌──┴──┐
-   ↓     ↓
-Success Failure
-   ↓     ↓
- Save  Rollback
-
-This approach is intended to minimize unintended changes and make automated repairs reversible.
 
 Project Goals
 
@@ -462,11 +471,12 @@ The main goals of Codebase Doctor are:
 
 Understand existing Python codebases.
 Detect meaningful software-engineering problems.
-Explain why those problems matter.
+Explain why detected problems matter.
 Provide actionable repair strategies.
 Use AI reasoning where traditional static analysis is insufficient.
 Make automated modifications controllable and reversible.
-Help developers maintain and improve complex software systems.
+Help developers maintain and improve complex software systems
+
 Author
 
 Amirmmohmad Fazllolahi
