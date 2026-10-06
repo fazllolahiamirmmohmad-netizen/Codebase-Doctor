@@ -1,0 +1,10 @@
+pytest
+ruff
+mypy
+radon
+networkx
+packaging
+GitPython
+pydantic
+ollama
+PySide6
