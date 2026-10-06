@@ -1,0 +1,66 @@
+# Codebase Doctor
+
+Codebase Doctor is an intelligent Python codebase analysis and repair system designed to inspect software projects, detect code and architectural problems, reason about detected issues, and safely assist with code repairs.
+
+The project is built around a modular architecture where scanning, parsing, analysis, security inspection, dependency analysis, repair planning, validation, and rollback are separated into independent components.
+
+> 🚧 Codebase Doctor is currently under active development.
+
+---
+
+## Overview
+
+Codebase Doctor is designed to work as a software engineering assistant for existing Python codebases.
+
+Instead of only checking whether code runs, the system aims to understand:
+
+- What files exist in a project
+- Which Python files can be parsed
+- What code-quality problems exist
+- What structural problems exist
+- How modules depend on each other
+- What security issues may exist
+- Why a detected issue matters
+- How an issue could be repaired
+- Whether a proposed repair is valid
+- How to safely roll back an unsuccessful modification
+
+The system follows an important principle:
+
+> **Code should never be modified without explicit user approval.**
+
+---
+
+## Architecture
+
+The planned processing pipeline is:
+
+```text
+Project
+   ↓
+Codebase Scanner
+   ↓
+Python AST Parser
+   ↓
+Code Analysis
+   ├── Architecture Analysis
+   ├── Dependency Analysis
+   └── Security Analysis
+   ↓
+Issue Detection
+   ↓
+AI Reasoning
+   ↓
+Issue Report
+   ↓
+User selects an issue
+   ↓
+Repair Planner
+   ↓
+User Approval
+   ↓
+Code Modifier
+   ↓
+Validation
+   ├── Success → Save Changes
+   └── Failure → Rollback
